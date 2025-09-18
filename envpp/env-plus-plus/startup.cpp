@@ -2,7 +2,7 @@
 #include <commctrl.h>
 #include <vector>
 #include <string>
-
+#include "resource.h"
 
 
 #pragma comment(lib, "comctl32.lib")
@@ -67,11 +67,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
         MessageBox(nullptr, L"Window Registration Failed!", L"Error!", MB_ICONEXCLAMATION | MB_OK);
         return 0;
     }
+    
+    WCHAR szTitle[256]; // Buffer to hold the string resource
+    LoadStringW(hInstance, IDS_TITLE, szTitle, sizeof(szTitle) / sizeof(WCHAR));
 
     g_hwndMain = CreateWindowEx(
         0,
         L"MainWindowClass",
-        L"Win32 Application with TreeView and Text Editor",
+        szTitle,
         WS_OVERLAPPEDWINDOW,
         CW_USEDEFAULT, CW_USEDEFAULT, 1000, 700,
         nullptr, nullptr, hInstance, nullptr
@@ -81,6 +84,23 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
         MessageBox(nullptr, L"Window Creation Failed!", L"Error!", MB_ICONEXCLAMATION | MB_OK);
         return 0;
     }
+
+    // Make the window center:  Get the window and screen dimensions
+    RECT rc;
+    GetWindowRect(g_hwndMain, &rc);
+    int windowWidth = rc.right - rc.left;
+    int windowHeight = rc.bottom - rc.top;
+
+    int screenWidth = GetSystemMetrics(SM_CXSCREEN);
+    int screenHeight = GetSystemMetrics(SM_CYSCREEN);
+
+    // Calculate the centered position
+    int xPos = (screenWidth - windowWidth) / 2;
+    int yPos = (screenHeight - windowHeight) / 2;
+
+    // Reposition the window
+    SetWindowPos(g_hwndMain, nullptr, xPos, yPos, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+
 
     ShowWindow(g_hwndMain, iCmdShow);
     UpdateWindow(g_hwndMain);
@@ -108,8 +128,8 @@ void CreateMenuBar(HWND hwnd) {
     HMENU hTreeMenu = CreatePopupMenu();
     HMENU hViewMenu = CreatePopupMenu();
 
-    AppendMenu(hFileMenu, MF_STRING, 1001, L"&New");
-    AppendMenu(hFileMenu, MF_STRING, 1002, L"&Open");
+    AppendMenu(hFileMenu, MF_STRING, 1001, L"&New Project");
+    AppendMenu(hFileMenu, MF_STRING, 1002, L"&Open Project");
     AppendMenu(hFileMenu, MF_STRING, 1003, L"&Save");
     AppendMenu(hFileMenu, MF_SEPARATOR, 0, nullptr);
     AppendMenu(hFileMenu, MF_STRING, 1004, L"E&xit");
@@ -119,23 +139,18 @@ void CreateMenuBar(HWND hwnd) {
     AppendMenu(hEditMenu, MF_STRING, 2003, L"&Copy");
     AppendMenu(hEditMenu, MF_STRING, 2004, L"&Paste");
     AppendMenu(hEditMenu, MF_STRING, 2005, L"Select &All");
-    AppendMenu(hEditMenu, MF_SEPARATOR, 0, nullptr);
-    AppendMenu(hEditMenu, MF_STRING, 2006, L"&Find");
-    AppendMenu(hEditMenu, MF_STRING, 2007, L"&Replace");
 
-    AppendMenu(hTreeMenu, MF_STRING, 3001, L"&Add Node");
-    AppendMenu(hTreeMenu, MF_STRING, 3002, L"&Remove Node");
-    AppendMenu(hTreeMenu, MF_STRING, 3003, L"&Clear All");
-    AppendMenu(hTreeMenu, MF_STRING, 3004, L"&Expand All");
-    AppendMenu(hTreeMenu, MF_STRING, 3005, L"&Collapse All");
 
-    AppendMenu(hViewMenu, MF_STRING, 4001, L"&Word Wrap");
-    AppendMenu(hViewMenu, MF_STRING, 4002, L"&Font...");
+    AppendMenu(hTreeMenu, MF_STRING, 3001, L"&Build Project");
+
+
+    AppendMenu(hViewMenu, MF_STRING, 4001, L"&About");
+    AppendMenu(hViewMenu, MF_STRING, 4002, L"&Documentation");
 
     AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hFileMenu, L"&File");
     AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hEditMenu, L"&Edit");
-    AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hTreeMenu, L"&Tree");
-    AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hViewMenu, L"&View");
+    AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hTreeMenu, L"&Build");
+    AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hViewMenu, L"&Help");
 
     SetMenu(hwnd, hMenu);
 }
