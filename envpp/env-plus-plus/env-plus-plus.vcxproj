@@ -138,9 +138,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="MainWindow.cpp" />
+    <ClCompile Include="MenuBar.cpp" />
     <ClCompile Include="startup.cpp" />
+    <ClCompile Include="startup_oop_backup.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="MainWindow.h" />
+    <ClInclude Include="MenuBar.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
