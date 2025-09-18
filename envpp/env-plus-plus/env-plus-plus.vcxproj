@@ -107,6 +107,20 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>if exist "$(SolutionDir)..\tcc" (
+    echo Copying TCC compiler to output directory...
+    xcopy "$(SolutionDir)..\tcc" "$(TargetDir)tcc\" /E /Y /I
+    echo TCC copied successfully!
+) else (
+    echo ERROR: TCC directory not found at $(SolutionDir)..\tcc
+    exit 1
+)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
